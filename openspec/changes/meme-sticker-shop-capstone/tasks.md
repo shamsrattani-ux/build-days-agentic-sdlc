@@ -2,26 +2,26 @@
 
 ## 1. App scaffold
 
-- [ ] 1.1 Scaffold the Next.js (App Router) + TypeScript project at
+- [x] 1.1 Scaffold the Next.js (App Router) + TypeScript project at
       `capstone/meme-sticker-shop/` with its own `package.json`,
       `tsconfig.json`, and lint/test scripts (`dev`, `build`, `lint`,
       `typecheck`, `test`); verify `npm install` and `npm run build` succeed
       from inside that directory.
-- [ ] 1.2 Add `capstone/meme-sticker-shop/AGENTS.md` describing the local
+- [x] 1.2 Add `capstone/meme-sticker-shop/AGENTS.md` describing the local
       boundary (owns this subtree only, does not touch `src/`) and the
       validation commands from 1.1; verify the file exists and links back to
       `../AGENTS.md`.
 
 ## 2. Shared contracts and storage boundary
 
-- [ ] 2.1 Define `Sticker`, `Purchase`, and shopper-balance TypeScript types
+- [x] 2.1 Define `Sticker`, `Purchase`, and shopper-balance TypeScript types
       shared across route handlers and UI; verify `npm run typecheck`
       passes.
-- [ ] 2.2 Define the `StickerShopStore` interface (`listStickers`,
+- [x] 2.2 Define the `StickerShopStore` interface (`listStickers`,
       `getBalance`, `purchaseSticker`, `listPurchases`) per design.md
       decision 3; verify it compiles and is imported only through this
       interface (no direct module-state access outside the adapter file).
-- [ ] 2.3 Implement the in-memory adapter: seeded catalog (5-8 stickers),
+- [x] 2.3 Implement the in-memory adapter: seeded catalog (5-8 stickers),
       single mock shopper with a starting balance, and an in-process mutex
       around `purchaseSticker` per design.md decision 4; verify unit tests
       cover: successful purchase debits balance and records a purchase,
