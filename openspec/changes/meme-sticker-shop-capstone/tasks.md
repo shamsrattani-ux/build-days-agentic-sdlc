@@ -31,17 +31,17 @@
 
 ## 3. API route handlers
 
-- [ ] 3.1 Implement `GET /api/stickers` returning the catalog; verify an API
+- [x] 3.1 Implement `GET /api/stickers` returning the catalog; verify an API
       test covers success and an empty-catalog case.
-- [ ] 3.2 Implement `GET /api/balance` returning the shopper's balance;
+- [x] 3.2 Implement `GET /api/balance` returning the shopper's balance;
       verify an API test covers the success case.
-- [ ] 3.3 Implement `POST /api/purchases` (purchase a sticker) returning the
+- [x] 3.3 Implement `POST /api/purchases` (purchase a sticker) returning the
       updated balance and the created purchase, with distinct error
       responses for insufficient credits, unavailable sticker, and
       unexpected storage failure; verify API tests cover all four outcomes
       (success, insufficient credits, unavailable, unexpected failure) per
       the `sticker-shop` spec.
-- [ ] 3.4 Implement `GET /api/purchases` returning purchase history; verify
+- [x] 3.4 Implement `GET /api/purchases` returning purchase history; verify
       an API test covers both the populated and empty-history cases.
 
 ## 4. UI: browse and purchase
