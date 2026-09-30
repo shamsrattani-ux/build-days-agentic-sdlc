@@ -7,6 +7,7 @@ import { rateLimit } from "express-rate-limit";
 import { ZodError, type ZodType } from "zod";
 import {
   createFeedbackSchema,
+  feedbackListQuerySchema,
   voteRequestSchema,
   type ApiError,
   type CreateFeedbackRequest,
@@ -85,8 +86,16 @@ export const createApp = ({
     }
   });
 
-  app.get("/api/feedback", async (_request, response) => {
-    response.json({ items: await storage.list() });
+  app.get("/api/feedback", async (request, response) => {
+    const parsed = feedbackListQuerySchema.safeParse(request.query);
+    if (!parsed.success) {
+      response.status(400).json(toValidationError(parsed.error) satisfies ApiError);
+      return;
+    }
+    const { category } = parsed.data;
+    response.json({
+      items: await storage.list(category === "all" ? {} : { category }),
+    });
   });
 
   app.post(
@@ -159,18 +168,22 @@ function validateBody(schema: ZodType): RequestHandler {
         next(error);
         return;
       }
-      const fieldErrors: Record<string, string[]> = {};
-      for (const issue of error.issues) {
-        const field = String(issue.path[0] ?? "request");
-        (fieldErrors[field] ??= []).push(issue.message);
-      }
-      response.status(400).json({
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Check the highlighted fields and try again.",
-          fieldErrors,
-        },
-      } satisfies ApiError);
+      response.status(400).json(toValidationError(error) satisfies ApiError);
     }
+  };
+}
+
+function toValidationError(error: ZodError): ApiError {
+  const fieldErrors: Record<string, string[]> = {};
+  for (const issue of error.issues) {
+    const field = String(issue.path[0] ?? "request");
+    (fieldErrors[field] ??= []).push(issue.message);
+  }
+  return {
+    error: {
+      code: "VALIDATION_ERROR",
+      message: "Check the highlighted fields and try again.",
+      fieldErrors,
+    },
   };
 }

@@ -38,9 +38,14 @@ export const voteRequestSchema = z.object({
     .regex(/^[A-Za-z0-9_-]+$/, "The workshop client ID is invalid."),
 });
 
+export const feedbackListQuerySchema = z.object({
+  category: z.enum([...feedbackCategories, "all"]).default("all"),
+});
+
 export type FeedbackCategory = (typeof feedbackCategories)[number];
 export type CreateFeedbackRequest = z.infer<typeof createFeedbackSchema>;
 export type VoteRequest = z.infer<typeof voteRequestSchema>;
+export type FeedbackListQuery = z.infer<typeof feedbackListQuerySchema>;
 
 export interface Feedback extends CreateFeedbackRequest {
   id: string;

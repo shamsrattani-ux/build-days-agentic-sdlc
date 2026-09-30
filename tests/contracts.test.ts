@@ -1,5 +1,6 @@
 import {
   createFeedbackSchema,
+  feedbackListQuerySchema,
   fieldLimits,
   voteRequestSchema,
 } from "../src/shared/contracts.js";
@@ -46,6 +47,24 @@ describe("feedback contracts", () => {
       true,
     );
     expect(voteRequestSchema.safeParse({ clientId: "not/valid" }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe("feedback list query contract", () => {
+  it("defaults a missing category to all", () => {
+    expect(feedbackListQuerySchema.parse({})).toEqual({ category: "all" });
+  });
+
+  it("parses each existing category unchanged", () => {
+    for (const category of ["content", "facilitation", "tooling", "idea"]) {
+      expect(feedbackListQuerySchema.parse({ category })).toEqual({ category });
+    }
+  });
+
+  it("rejects an unsupported category value", () => {
+    expect(feedbackListQuerySchema.safeParse({ category: "unsupported" }).success).toBe(
       false,
     );
   });

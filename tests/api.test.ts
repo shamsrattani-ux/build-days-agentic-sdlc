@@ -103,6 +103,66 @@ describe("feedback API", () => {
       });
   });
 
+  it("filters listed feedback by category and clears the filter for all", async () => {
+    const app = createApp({
+      storage: new InMemoryFeedbackStorage(),
+      logger: silentLogger,
+    });
+    await request(app)
+      .post("/api/feedback")
+      .send({
+        title: "More examples",
+        description: "Add another guided example.",
+        category: "content",
+        displayName: "Lin",
+      })
+      .expect(201);
+    await request(app)
+      .post("/api/feedback")
+      .send({
+        title: "Keep checkpoints",
+        description: "The checkpoints help a lot.",
+        category: "facilitation",
+        displayName: "Lin",
+      })
+      .expect(201);
+
+    const noQuery = await request(app).get("/api/feedback").expect(200);
+    expect(noQuery.body.items).toHaveLength(2);
+
+    const allQuery = await request(app)
+      .get("/api/feedback")
+      .query({ category: "all" })
+      .expect(200);
+    expect(allQuery.body.items).toHaveLength(2);
+
+    const filtered = await request(app)
+      .get("/api/feedback")
+      .query({ category: "content" })
+      .expect(200);
+    expect(filtered.body.items).toHaveLength(1);
+    expect(filtered.body.items[0].category).toBe("content");
+  });
+
+  it("rejects an unsupported category filter without altering stored data", async () => {
+    const storage = new InMemoryFeedbackStorage();
+    const app = createApp({ storage, logger: silentLogger });
+    await storage.create({
+      title: "More examples",
+      description: "Add another guided example.",
+      category: "content",
+      displayName: "Lin",
+    });
+
+    const response = await request(app)
+      .get("/api/feedback")
+      .query({ category: "unsupported" })
+      .expect(400);
+
+    expect(response.body.error.code).toBe("VALIDATION_ERROR");
+    expect(await storage.list()).toHaveLength(1);
+  });
+
   it("rate-limits repeated application requests without blocking liveness", async () => {
     const app = createApp({
       storage: new InMemoryFeedbackStorage(),
@@ -132,6 +192,23 @@ describe("feedback API", () => {
     };
     const app = createApp({ storage, logger: silentLogger });
     const response = await request(app).get("/api/feedback").expect(500);
+    expect(response.text).not.toContain("connection string");
+    expect(response.body.error.code).toBe("INTERNAL_ERROR");
+  });
+
+  it("converts storage failures to safe errors even with a valid filter", async () => {
+    const storage: FeedbackStorage = {
+      initialize: () => Promise.resolve(),
+      list: () => Promise.reject(new Error("connection string was secret")),
+      create: () => Promise.reject(new Error("unused")),
+      vote: () => Promise.reject(new Error("unused")),
+      checkHealth: () => Promise.resolve(),
+    };
+    const app = createApp({ storage, logger: silentLogger });
+    const response = await request(app)
+      .get("/api/feedback")
+      .query({ category: "content" })
+      .expect(500);
     expect(response.text).not.toContain("connection string");
     expect(response.body.error.code).toBe("INTERNAL_ERROR");
   });

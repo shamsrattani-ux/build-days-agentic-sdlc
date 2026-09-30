@@ -60,6 +60,21 @@ describe("in-memory feedback storage", () => {
     await seedStorage(storage);
     expect(await storage.list()).toHaveLength(2);
   });
+
+  it("filters listed feedback by category", async () => {
+    const storage = new InMemoryFeedbackStorage();
+    await storage.create(input, { id: "facilitation-1" });
+    await storage.create(
+      { ...input, category: "content" },
+      { id: "content-1" },
+    );
+
+    expect((await storage.list({ category: "facilitation" })).map(({ id }) => id)).toEqual([
+      "facilitation-1",
+    ]);
+    expect(await storage.list({ category: "tooling" })).toEqual([]);
+    expect(await storage.list()).toHaveLength(2);
+  });
 });
 
 describe("Azure Table feedback storage", () => {
@@ -118,5 +133,40 @@ describe("Azure Table feedback storage", () => {
       alreadyVoted: true,
       feedback: { votes: 2 },
     });
+  });
+
+  it("includes the category in the odata filter when listing by category", async () => {
+    const table = {
+      listEntities: vi.fn().mockReturnValue({
+        async *[Symbol.asyncIterator]() {},
+      }),
+    };
+    const storage = new AzureTableFeedbackStorage(
+      table as unknown as TableClient,
+    );
+
+    await storage.list({ category: "tooling" });
+
+    expect(table.listEntities).toHaveBeenCalledOnce();
+    const call = table.listEntities.mock.calls[0]?.[0];
+    const { queryOptions } = call ?? {};
+    expect(queryOptions?.filter).toContain("category eq 'tooling'");
+  });
+
+  it("omits the category clause when listing without a filter", async () => {
+    const table = {
+      listEntities: vi.fn().mockReturnValue({
+        async *[Symbol.asyncIterator]() {},
+      }),
+    };
+    const storage = new AzureTableFeedbackStorage(
+      table as unknown as TableClient,
+    );
+
+    await storage.list();
+
+    const call = table.listEntities.mock.calls[0]?.[0];
+    const { queryOptions } = call ?? {};
+    expect(queryOptions?.filter).not.toContain("category");
   });
 });
