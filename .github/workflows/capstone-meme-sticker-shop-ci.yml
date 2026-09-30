@@ -1,4 +1,4 @@
-﻿name: Capstone Meme Sticker Shop CI
+name: Capstone Meme Sticker Shop CI
 
 on:
   pull_request:
