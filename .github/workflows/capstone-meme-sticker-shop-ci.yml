@@ -28,16 +28,7 @@ jobs:
         with:
           node-version: "20.19"
       - name: Install dependencies
-        # No package-lock.json is committed for this capstone app yet, so `npm
-        # ci` cannot be used reliably. Prefer `npm ci` automatically once a
-        # lockfile lands (for reproducible installs); fall back to
-        # `npm install` until then.
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
       - name: Lint
         run: npm run lint
       - name: Type-check
