@@ -38,5 +38,14 @@ npm run build
 npm run check
 ```
 
+> **Windows long-path note:** this worktree's absolute path can push
+> `node_modules` file paths past Windows' 260-char `MAX_PATH` limit,
+> silently truncating `npm install` (missing `dist/` output in some
+> packages) without a prior full clean. If `npm run lint`/`build` fails
+> with "Cannot find module" errors pointing into `node_modules`, `subst`
+> a short drive letter to the worktree root (e.g. `subst X:
+> <worktree-root>`) and run `npm install` from `X:\capstone\meme-sticker-shop`
+> instead — no admin rights required, fully reversible with `subst /D`.
+
 Read the OpenSpec change's `proposal.md`, `specs/sticker-shop/spec.md`,
 `design.md`, and `tasks.md` before making further changes.
