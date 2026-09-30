@@ -46,19 +46,19 @@
 
 ## 4. UI: browse and purchase
 
-- [ ] 4.1 Build the sticker grid page showing image, name, and price per
+- [x] 4.1 Build the sticker grid page showing image, name, and price per
       sticker, with loading, empty, and failure states; verify a UI test
       exercises all three non-success states plus the populated grid, per
       the `Browse the sticker catalog` requirement.
-- [ ] 4.2 Build the balance display that updates after a purchase without a
+- [x] 4.2 Build the balance display that updates after a purchase without a
       full page reload; verify a UI test confirms the displayed balance
       changes after a successful purchase.
-- [ ] 4.3 Build the purchase action (e.g. a button per sticker) with
+- [x] 4.3 Build the purchase action (e.g. a button per sticker) with
       accessible confirmation and distinct error messaging for insufficient
       credits vs. unavailable vs. unexpected failure; verify UI tests cover
       each message path per the `Purchase a sticker with virtual credits`
       requirement.
-- [ ] 4.4 Build the purchase history view with populated and empty states;
+- [x] 4.4 Build the purchase history view with populated and empty states;
       verify a UI test covers both per the `View purchase history`
       requirement.
 

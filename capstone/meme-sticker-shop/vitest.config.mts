@@ -8,6 +8,12 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "."),
     },
+    // Vite normalizes resolved paths via fs.realpathSync by default, which
+    // resolves the `subst`-mapped X: drive (used to work around Windows'
+    // 260-char MAX_PATH limit on this deeply nested worktree) back to its
+    // long real path and breaks module resolution consistency. Preserve the
+    // drive-letter path as-is instead.
+    preserveSymlinks: true,
   },
   test: {
     environment: "jsdom",
