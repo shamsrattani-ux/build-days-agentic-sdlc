@@ -64,12 +64,37 @@
 
 ## 5. End-to-end validation
 
-- [ ] 5.1 Run the full local validation suite (lint, typecheck, unit, API,
+- [x] 5.1 Run the full local validation suite (lint, typecheck, unit, API,
       and UI tests) from `capstone/meme-sticker-shop/` and record the exact
       commands and pass/fail results.
-- [ ] 5.2 Manually walk the browse → purchase → balance-update → purchase-
+
+      Commands run from `capstone/meme-sticker-shop/`:
+      ```
+      npm run check
+      # = npm run lint && npm run typecheck && npm test && npm run build
+      ```
+      Results: lint — pass (0 errors); typecheck (`tsc --noEmit`) — pass;
+      test (`vitest run`) — pass, 5 test files / 26 tests, 0 failures;
+      build (`next build`) — pass (Turbopack, all routes compiled,
+      `/` prerendered static, `/api/*` dynamic).
+- [x] 5.2 Manually walk the browse → purchase → balance-update → purchase-
       history flow in the dev server and confirm it matches every scenario
       in `specs/sticker-shop/spec.md`.
-- [ ] 5.3 Confirm no changes were made to `src/`, the existing feedback app,
+
+      Verified against the running `npm run dev` server (localhost:3000):
+      `GET /api/stickers` returned the seeded 6-sticker catalog;
+      `GET /api/balance` returned the starting 40-credit balance;
+      `POST /api/purchases` for an affordable sticker returned 201 with the
+      created purchase and updated (debited) balance; the purchased sticker
+      no longer appeared in a subsequent `GET /api/stickers`; `GET
+      /api/purchases` reflected the new purchase in history. Also confirmed
+      live in-browser via the dev server UI (purchase button, balance
+      display, and history list all updated without a full page reload).
+- [x] 5.3 Confirm no changes were made to `src/`, the existing feedback app,
       or its tests, and that the new subtree is independently reviewable
       (non-overlapping file ownership from tasks 1-4).
+
+      `git diff --stat` against the pre-change base, excluding
+      `capstone/meme-sticker-shop/` and
+      `openspec/changes/meme-sticker-shop-capstone/`, shows zero changed
+      files — confirmed no overlap with `src/` or any other subtree.
