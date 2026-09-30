@@ -1,0 +1,48 @@
+﻿name: Capstone Meme Sticker Shop CI
+
+on:
+  pull_request:
+    paths:
+      - "capstone/meme-sticker-shop/**"
+      - ".github/workflows/capstone-meme-sticker-shop-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "capstone/meme-sticker-shop/**"
+      - ".github/workflows/capstone-meme-sticker-shop-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: capstone/meme-sticker-shop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19"
+      - name: Install dependencies
+        # No package-lock.json is committed for this capstone app yet, so `npm
+        # ci` cannot be used reliably. Prefer `npm ci` automatically once a
+        # lockfile lands (for reproducible installs); fall back to
+        # `npm install` until then.
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+      - name: Lint
+        run: npm run lint
+      - name: Type-check
+        run: npm run typecheck
+      - name: Test
+        run: npm test
+      - name: Build
+        run: npm run build
